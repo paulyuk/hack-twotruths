@@ -45,6 +45,25 @@ http://0.0.0.0:7071/mcp
 ```
 5. Start the server from the MCP view in VS Code.
 
+### Start a real interactive game (CLI)
+Run an actual game round in your terminal using the storage backend:
+```bash
+python scripts/start_game_cli.py
+```
+
+### Manage sessions
+- List sessions (meta rows):
+```python
+from src.mcp_twotruths.storage import TableStorage
+s = TableStorage()
+print(s.list_sessions())
+```
+
+- Reset (delete) a session:
+```bash
+python scripts/reset_session.py <session_id>
+```
+
 ## Deploy
 Follow the BYO guide in the sample repo:
 - https://github.com/Azure-Samples/mcp-sdk-functions-hosting-python

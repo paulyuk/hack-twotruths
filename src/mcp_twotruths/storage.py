@@ -70,6 +70,31 @@ class TableStorage:
         except Exception:
             return None
 
+    def list_sessions(self) -> List[Dict]:
+        """List all sessions by querying meta rows across partitions."""
+        # Query all rows with RowKey == 'meta' to discover sessions
+        return list(self._client.query_entities("RowKey eq 'meta'"))
+
+    def delete_session(self, session_id: str) -> Dict:
+        """Delete all entities for a given session partition (meta, statements, votes, presentations, scores)."""
+        deleted = 0
+        errors: List[str] = []
+        # Enumerate all entities with the session's PartitionKey
+        try:
+            pager = self._client.list_entities(query_filter=f"PartitionKey eq '{session_id}'")
+        except TypeError:
+            # Fallback for older SDKs
+            pager = self._client.query_entities(f"PartitionKey eq '{session_id}'")
+        for ent in pager:
+            pk = ent["PartitionKey"]
+            rk = ent["RowKey"]
+            try:
+                self._client.delete_entity(partition_key=pk, row_key=rk)
+                deleted += 1
+            except Exception as e:
+                errors.append(f"{rk}: {e}")
+        return {"sessionId": session_id, "deleted": deleted, "errors": errors}
+
     # Statements
     def upsert_statements(self, session_id: str, email: str, truth1: str, truth2: str, lie1: str, alias: str) -> None:
         entity = {
