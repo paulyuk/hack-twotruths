@@ -64,6 +64,13 @@ print(s.list_sessions())
 python scripts/reset_session.py <session_id>
 ```
 
+### Export results to CSV
+Write statements, votes, and scores to CSV files:
+```bash
+python scripts/export_session_csv.py <session_id>  # defaults to ./exports
+python scripts/export_session_csv.py <session_id> ./my-exports
+```
+
 ## Deploy
 Follow the BYO guide in the sample repo:
 - https://github.com/Azure-Samples/mcp-sdk-functions-hosting-python
